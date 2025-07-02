@@ -1,0 +1,22 @@
+{
+  "name": "rephrase",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "backend:db:typesgen": "supabase gen types typescript --local > ./common/database.types.ts",
+    "backend:db:dump": "supabase db dump --local > ./supabase/dump.sql",
+    "backend:db:reset": "supabase db reset",
+    "backend:functions": "supabase functions serve --env-file=./.env.local",
+    "backend:test": "deno test ./supabase/functions/test --env-file=./.env.local --allow-all"
+  },
+  "dependencies": {
+    "zod": "^3.25.48"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.2",
+    "supabase": "^2.23.4",
+    "typescript": "^5"
+  }
+}
