@@ -108,7 +108,7 @@ const rephraseTx = async (
 ): Promise<TransactionResult<Response>> => {
   const currentUserBalance = await lockUserBalance(conn, userId);
   if (!currentUserBalance) {
-    return TxFail(newResponse("User not found", STATUS_CODE.NotFound));
+    return TxFail(newResponse("Data inconsistency, authed user data not found", STATUS_CODE.InternalServerError));
   }
 
   const existingOutput = await findExistingRephrase(
