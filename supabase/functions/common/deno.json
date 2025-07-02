@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "postgres": "jsr:@db/postgres",
+    "@/common/": "../../../common/"
+  }
+}
