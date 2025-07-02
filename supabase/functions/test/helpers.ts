@@ -1,5 +1,7 @@
 import { createClient, SupabaseClient } from 'npm:@supabase/supabase-js@2'
 import { Client } from "jsr:@db/postgres";
+import { assertEquals, assertExists } from 'jsr:@std/assert@1'
+
 
 export const TestUserId = '00000000-0000-0000-0000-000000000001'
 export const TestStyleId = '00000000-0000-0000-0000-000000000042'
@@ -123,4 +125,27 @@ const createStyle = async (client: Client, enabled: boolean) => {
 const fundUserBalance = async (client: Client, fundUser: boolean) => {
   const balance = fundUser ? 100000 : 0
   await client.queryObject('UPDATE public.users SET balance = $1 WHERE user_id = $2', [balance, TestUserId])
+}
+
+export const assertSuccess = (response: any, expectedData?: any) => {
+  assertEquals(response.error, null)
+  assertExists(response.data)
+  
+  if (expectedData) {
+    assertEquals(response.data, expectedData)
+  }
+}
+
+export const assertError = async (error: any, expectedStatus: number, expectedMessage?: string) => {
+  assertExists(error)
+  assertEquals(error.context.status, expectedStatus)
+  
+  if (expectedMessage) {
+    const responseBody = await error.context.json()
+    if (typeof responseBody === 'object' && responseBody.reason) {
+      assertEquals(responseBody.reason, expectedMessage)
+    } else {
+      assertEquals(responseBody, expectedMessage)
+    }
+  }
 }

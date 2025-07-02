@@ -1,22 +1,19 @@
-import { assertEquals, assertExists } from 'jsr:@std/assert@1'
+import { assertEquals } from 'jsr:@std/assert@1'
+import { STATUS_CODE } from "jsr:@std/http/status";
 
-import { SupabaseFixture, TestStyleId } from "./helpers.ts";
+import { assertError, assertSuccess, SupabaseFixture, TestStyleId } from "./helpers.ts";
+
 
 Deno.test('Rephrase Success', async () => {
   const client = await SupabaseFixture({ authedUser: true, enabledStyle: true, fundUser: true })
-  const { data, error } = await client.functions.invoke(
-    'rephrase', {
+  const response = await client.functions.invoke('rephrase', {
     body: {
       text: 'hellow',
       style_id: TestStyleId,
       idempotency_key: crypto.randomUUID(),
     },
   })
-  if (error) {
-    const errorJson = await error.context.json()
-    throw new Error('Invalid response: ' + errorJson)
-  }
-  assertEquals(data.rephrased, 'rephrased Fake global prompt.\n\nSome prompt\n\nInput text: hellow')
+  assertSuccess(response, {rephrased: 'rephrased Fake global prompt.\n\nSome prompt\n\nInput text: hellow'})
 })
 
 Deno.test('Rephrase No Auth', async () => {
@@ -28,11 +25,8 @@ Deno.test('Rephrase No Auth', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  assertExists(error)
-  assertEquals(await error.context.json(), 'Unauthorized')
+  await assertError(error, STATUS_CODE.Unauthorized, 'Unauthorized')
 })
-
-
 
 Deno.test('Rephrase Missing Text', async () => {
   const client = await SupabaseFixture({ authedUser: true, enabledStyle: true, fundUser: true })
@@ -43,10 +37,7 @@ Deno.test('Rephrase Missing Text', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson.reason, 'Invalid request body')
+  await assertError(error, STATUS_CODE.BadRequest, 'Invalid request body')
 })
 
 Deno.test('Rephrase Text Too Short', async () => {
@@ -58,12 +49,8 @@ Deno.test('Rephrase Text Too Short', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson.reason, 'Invalid request body')
+  await assertError(error, STATUS_CODE.BadRequest, 'Invalid request body')
 })
-
 
 Deno.test('Rephrase Text Too Long', async () => {
   const client = await SupabaseFixture({ authedUser: true, enabledStyle: true, fundUser: true })
@@ -74,10 +61,7 @@ Deno.test('Rephrase Text Too Long', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson.reason, 'Invalid request body')
+  await assertError(error, STATUS_CODE.BadRequest, 'Invalid request body')
 })
 
 Deno.test('Rephrase Invalid Style ID', async () => {
@@ -89,12 +73,9 @@ Deno.test('Rephrase Invalid Style ID', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson.reason, 'Invalid request body')
-}
-)
+  await assertError(error, STATUS_CODE.BadRequest, 'Invalid request body')
+})
+
 Deno.test('Rephrase Missing Idempotency Key', async () => {
   const client = await SupabaseFixture({ authedUser: true, enabledStyle: true, fundUser: true })
   const { error } = await client.functions.invoke('rephrase', {
@@ -104,10 +85,7 @@ Deno.test('Rephrase Missing Idempotency Key', async () => {
       // Missing idempotency_key
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson.reason, 'Invalid request body')
+  await assertError(error, STATUS_CODE.BadRequest, 'Invalid request body')
 })
 
 Deno.test('Rephrase Insufficient Funds', async () => {
@@ -119,10 +97,7 @@ Deno.test('Rephrase Insufficient Funds', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson, 'Balance too low')
+  await assertError(error, STATUS_CODE.PaymentRequired, 'Balance too low')
 })
 
 Deno.test('Rephrase Style Not Found', async () => {
@@ -134,36 +109,30 @@ Deno.test('Rephrase Style Not Found', async () => {
       idempotency_key: crypto.randomUUID(),
     },
   })
-  
-  assertExists(error)
-  const errorJson = await error.context.json()
-  assertEquals(errorJson, 'Style not found')
+  await assertError(error, STATUS_CODE.NotFound, 'Style not found')
 })
 
 Deno.test('Rephrase Idempotency', async () => {
   const client = await SupabaseFixture({ authedUser: true, enabledStyle: true, fundUser: true })
   const idempotencyKey = crypto.randomUUID()
-  const requestBody = {
-    text: 'test idempotency',
-    style_id: TestStyleId,
-    idempotency_key: idempotencyKey,
-  }
   
-  const { data: firstData, error: firstError } = await client.functions.invoke('rephrase', {
-    body: requestBody,
+  const responseOne = await client.functions.invoke('rephrase', {
+    body: {
+      text: 'test idempotency',
+      style_id: TestStyleId,
+      idempotency_key: idempotencyKey,
+    },
   })
+  assertSuccess(responseOne)
   
-  if (firstError) {
-    throw new Error('First request failed: ' + firstError.message)
-  }
-  
-  const { data: secondData, error: secondError } = await client.functions.invoke('rephrase', {
-    body: requestBody,
+  const responseTwo = await client.functions.invoke('rephrase', {
+    body: {
+      text: 'different text to check idempotency - should return responseOne',
+      style_id: TestStyleId,
+      idempotency_key: idempotencyKey,
+    },
   })
+  assertSuccess(responseTwo)
   
-  if (secondError) {
-    throw new Error('Second request failed: ' + secondError.message)
-  }
-  
-  assertEquals(firstData.rephrased, secondData.rephrased)
+  assertEquals(responseOne.data.rephrased, responseTwo.data.rephrased)
 })
