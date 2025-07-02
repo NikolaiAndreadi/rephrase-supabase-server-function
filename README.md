@@ -2,7 +2,7 @@
 
 AI text rephrasing API with configurable pricing, built on Supabase Edge Functions.
 
-⚠️ **This is a stripped-down mid-development checkpoint of a real project**
+⚠️ **This is a stripped-down mid-development checkpoint of a real project. It will not be updated.**
 
 **Limitations:**
 - **No frontend implementation, No other server functions** - single rephrase endpoint only  
