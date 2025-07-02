@@ -40,9 +40,7 @@ export const SupabaseFixture = async (
   await createUser(dbClient)
 
   await createStyle(dbClient, enabledStyle)
-  if (fundUser) {
-    await fundUserBalance(dbClient)
-  }
+  await fundUserBalance(dbClient, fundUser)
 
   if (authedUser) {
     await authUser(sbClient)
@@ -122,6 +120,7 @@ const createStyle = async (client: Client, enabled: boolean) => {
   )
 }
 
-const fundUserBalance = async (client: Client) => {
-  await client.queryObject('UPDATE public.users SET balance = 10000 WHERE user_id = $1', [TestUserId])
+const fundUserBalance = async (client: Client, fundUser: boolean) => {
+  const balance = fundUser ? 100000 : 0
+  await client.queryObject('UPDATE public.users SET balance = $1 WHERE user_id = $2', [balance, TestUserId])
 }

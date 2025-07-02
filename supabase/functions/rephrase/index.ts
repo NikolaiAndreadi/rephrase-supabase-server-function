@@ -107,7 +107,7 @@ const rephraseTx = async (
   rephraseParams: RephraseRequest,
 ): Promise<TransactionResult<Response>> => {
   const currentUserBalance = await lockUserBalance(conn, userId);
-  if (!currentUserBalance) {
+  if (currentUserBalance === undefined) {
     return TxFail(newResponse("Data inconsistency, authed user data not found", STATUS_CODE.InternalServerError));
   }
 
@@ -123,7 +123,7 @@ const rephraseTx = async (
   const newBalance = currentUserBalance - userTokenPrice;
   if (newBalance < 0) {
     return TxFail(
-      newResponse("Not enough tokens", STATUS_CODE.PaymentRequired),
+      newResponse("Balance too low", STATUS_CODE.PaymentRequired),
     );
   }
 
