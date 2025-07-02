@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@/common/": "../../../common/",
+    "@/backend_common/": "../common/",
+    "zod": "npm:zod"
+  }
+}
