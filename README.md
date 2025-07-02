@@ -1,0 +1,39 @@
+# AI Text Rephrasing Service Example
+
+AI text rephrasing API with configurable pricing, built on Supabase Edge Functions.
+
+## Features
+- AI-powered text rephrasing with multiple writing styles
+- Idempotency support and comprehensive audit trail
+- PostgreSQL with Row Level Security
+- Extensible LLM provider system
+
+## API Usage
+
+**POST** `/functions/v1/rephrase`
+```json
+{
+  "text": "Text to rephrase",
+  "style_id": "uuid-of-writing-style", 
+  "idempotency_key": "unique-uuid"
+}
+```
+
+**Response:**
+```json
+{
+  "rephrased": "AI-transformed text"
+}
+```
+
+## Architecture
+- **Edge Functions**: Serverless Deno runtime
+- **Database**: PostgreSQL with migrations  
+- **Authentication**: Supabase Auth
+- **LLM Integration**: Pluggable provider system
+- **Testing**: Comprehensive test suite
+
+## Tech Stack
+- TypeScript + Deno
+- Supabase (PostgreSQL + Edge Functions)
+- Zod validation
