@@ -8,7 +8,7 @@ AI text rephrasing API with configurable pricing, built on Supabase Edge Functio
 - **No frontend implementation, No other server functions** - single rephrase endpoint only  
 - **No observability/monitoring** - basic console logging only
 - **Synchronous LLM processing** - no background tasks or async job queues
-- **Mock LLM providers** - no real AI integrations (OpenAI, Anthropic, etc.)
+- **Mock LLM providers** - no real AI integrations (OpenAI, Anthropic, etc.), no deadline logic
 - **Simplified pricing logic** - basic fake prompt builder and token counter
 
 ## Features
