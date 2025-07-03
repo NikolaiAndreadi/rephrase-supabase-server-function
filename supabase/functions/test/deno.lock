@@ -7,6 +7,7 @@
     "jsr:@std/crypto@^1.0.4": "1.0.5",
     "jsr:@std/encoding@^1.0.9": "1.0.10",
     "jsr:@std/fmt@^1.0.6": "1.0.8",
+    "jsr:@std/http@*": "1.0.18",
     "jsr:@std/internal@^1.0.6": "1.0.9",
     "jsr:@std/path@^1.0.8": "1.0.9",
     "npm:@supabase/supabase-js@2": "2.49.4"
@@ -39,6 +40,9 @@
     },
     "@std/fmt@1.0.8": {
       "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
+    },
+    "@std/http@1.0.18": {
+      "integrity": "8d9546aa532c52a0cf318c74616db0638b4c1073405355d1b14f9e1591dccf20"
     },
     "@std/internal@1.0.9": {
       "integrity": "bdfb97f83e4db7a13e8faab26fb1958d1b80cc64366501af78a0aee151696eb8"

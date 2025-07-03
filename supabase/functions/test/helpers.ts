@@ -127,7 +127,23 @@ const fundUserBalance = async (client: Client, fundUser: boolean) => {
   await client.queryObject('UPDATE public.users SET balance = $1 WHERE user_id = $2', [balance, TestUserId])
 }
 
-export const assertSuccess = (response: any, expectedData?: any) => {
+export const getUserBalance = async (client: SupabaseClient): Promise<number> => {
+  const { data, error } = await client
+    .from('users')
+    .select('balance')
+    .eq('user_id', TestUserId)
+    .single()
+
+  if (error) throw error
+  return data?.balance ?? 0
+}
+
+interface FunctionResponse<T = unknown> {
+  data: T | null
+  error: FunctionError | null
+}
+
+export const assertSuccess = <T>(response: FunctionResponse<T>, expectedData?: T) => {
   assertEquals(response.error, null)
   assertExists(response.data)
   
@@ -136,14 +152,24 @@ export const assertSuccess = (response: any, expectedData?: any) => {
   }
 }
 
-export const assertError = async (error: any, expectedStatus: number, expectedMessage?: string) => {
+interface FunctionError {
+  context: {
+    status: number
+    json(): Promise<unknown>
+  }
+}
+
+export const assertError = async (
+  error: FunctionError,
+  expectedStatus: number,
+  expectedMessage?: string,
+) => {
   assertExists(error)
   assertEquals(error.context.status, expectedStatus)
-  
+  const responseBody = await error.context.json()
   if (expectedMessage) {
-    const responseBody = await error.context.json()
-    if (typeof responseBody === 'object' && responseBody.reason) {
-      assertEquals(responseBody.reason, expectedMessage)
+    if (responseBody && typeof responseBody === 'object' && 'reason' in responseBody) {
+      assertEquals((responseBody as { reason: string }).reason, expectedMessage)
     } else {
       assertEquals(responseBody, expectedMessage)
     }
