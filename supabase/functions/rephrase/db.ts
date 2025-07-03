@@ -23,18 +23,37 @@ export const lockUserBalance = async (
   return rows.at(0)?.balance;
 };
 
+export type ExistingRephrase = 
+  | { type: 'success'; text: string }
+  | { type: 'user_error'; message: string }
+  | undefined;
+
 export const findExistingRephrase = async (
   conn: PoolClient,
   userId: string,
   idempotencyKey: string,
-): Promise<string | undefined> => {
+): Promise<ExistingRephrase> => {
   const { rows } = await conn.queryObject<
-    Pick<Tables<"rephrase_history">, "output_text">
+    Pick<Tables<"rephrase_history">, "output_text" | "error_message" | "status">
   >(
-    "SELECT output_text FROM public.rephrase_history WHERE user_id = $1 AND idempotency_key = $2 AND status != $3",
+    "SELECT output_text, error_message, status FROM public.rephrase_history WHERE user_id = $1 AND idempotency_key = $2 AND status != $3",
     [userId, idempotencyKey, REPHRASE_STATUS.FAILED],
   );
-  return rows.at(0)?.output_text ?? undefined;
+  
+  const row = rows.at(0);
+  if (!row) return undefined;
+
+  switch (row.status) {
+    case REPHRASE_STATUS.REPHRASED: {
+      return { type: 'success', text: row.output_text! }
+    }
+    case REPHRASE_STATUS.BAD_USER_REQUEST: {
+      return { type: 'user_error', message: row.error_message! };
+    }
+    default: {
+      return undefined;
+    }
+  }
 };
 
 export const getPromptStyle = async (
