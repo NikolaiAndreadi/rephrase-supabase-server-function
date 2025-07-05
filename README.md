@@ -8,7 +8,7 @@ This is a simplified version of a customer project, this repository represents a
 **Limitations:**
 - **No frontend implementation, No other server functions** - single rephrase endpoint only  
 - **No observability/monitoring** - basic console logging only
-- **Synchronous LLM processing** - no background tasks or async job queues. For current startup stage, it is sufficient to accept long transactions if favour of faster delivery. 
+- **Synchronous LLM processing** - no background tasks or async jobs. At this development checkpoint stage, synchronous transactions were chosen to prioritize rapid feature delivery over optimal scalability.
 - **Only fake LLM provider** - no real AI integrations (OpenAI, Anthropic, etc.), no deadline/retry logic
 - **Simplified pricing logic** - basic fake prompt builder and token counter
 
