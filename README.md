@@ -1,14 +1,15 @@
 # AI Text Rephrasing Service Example
 
-AI text rephrasing API with configurable pricing, built on Supabase Edge Functions.
+AI text rephrasing API, built on Supabase Edge Functions.
 
-⚠️ **This is a stripped-down mid-development checkpoint of a real project. It will not be updated.**
+⚠️ Portfolio Project - Development Checkpoint
+This is a simplified version of a customer project, this repository represents a specific development milestone and will not receive updates.
 
 **Limitations:**
 - **No frontend implementation, No other server functions** - single rephrase endpoint only  
 - **No observability/monitoring** - basic console logging only
-- **Synchronous LLM processing** - no background tasks or async job queues
-- **Mock LLM providers** - no real AI integrations (OpenAI, Anthropic, etc.), no deadline logic
+- **Synchronous LLM processing** - no background tasks or async job queues. For current startup stage, it is sufficient to accept long transactions if favour of faster delivery. 
+- **Only fake LLM provider** - no real AI integrations (OpenAI, Anthropic, etc.), no deadline/retry logic
 - **Simplified pricing logic** - basic fake prompt builder and token counter
 
 ## Features
