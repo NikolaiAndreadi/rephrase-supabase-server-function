@@ -2,13 +2,14 @@
 
 AI text rephrasing API, built on Supabase Edge Functions.
 
-⚠️ Portfolio Project - Development Checkpoint
-This is a simplified version of a customer project, this repository represents a specific development milestone and will not receive updates.
+⚠️ Development Checkpoint for Portfolio
+
+This is a simplified version of an in-development customer project and will not receive updates.
 
 **Limitations:**
 - **No frontend implementation, No other server functions** - single rephrase endpoint only  
 - **No observability/monitoring** - basic console logging only
-- **Synchronous LLM processing** - no background tasks or async jobs. At this development checkpoint stage, synchronous transactions were chosen to prioritize rapid feature delivery over optimal scalability.
+- **Synchronous LLM processing** - no background tasks or async jobs. At this development checkpoint stage, synchronous transactions were chosen to prioritize rapid feature delivery over optimal scalability (at least at time of this development checkpoint).
 - **Only fake LLM provider** - no real AI integrations (OpenAI, Anthropic, etc.), no deadline/retry logic
 - **Simplified pricing logic** - basic fake prompt builder and token counter
 
